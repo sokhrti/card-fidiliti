@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>الزبون – Tappy</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap"><link rel="stylesheet" href="assets/style.css"></head><body><div class="w"><header id="hd"></header><h2>صفحة الزبون</h2><p class="sub" id="sb">دير الكارط ديالك.</p>
+<div id="jn" class="form"><label for="b">النشاط</label><select id="b"></select><label for="nm">الاسم</label><input id="nm" autocomplete="name"><label for="ph">نمرة التليفون</label><input id="ph" type="tel" dir="ltr" inputmode="tel" autocomplete="tel"><button class="btn" id="jb">زيد لـ Wallet</button><div class="msg" id="ms" role="alert"></div></div>
+<div id="cd"></div><div id="ac" style="display:none"><button class="btn au" id="nr">راني قريب من المحل (100 متر)</button> <button class="chip" id="lo">خرج</button></div>
+<div class="mod" id="md"><div class="sheet"><b id="mt"></b><div style="font-size:13px;color:#555">شنو رأيك فالتجربة؟ (Google Maps)</div><div class="stars" id="sr"></div><textarea id="tx" placeholder="خلي لينا كلمة…" aria-label="تعليق"></textarea><button class="btn" id="mp">نشر</button></div></div>
+<footer>tappy · Apple Wallet · Google Wallet</footer></div><div class="toast" id="toast" role="status"></div><script src="assets/app.js"></script>
+<script>head('customer.html');var me=null,rate=0,$=function(i){return document.getElementById(i)};
+try{me=localStorage.getItem('tappy_me')}catch(e){}
+var q=new URLSearchParams(location.search).get('b');$('b').innerHTML=Object.keys(BIZ).map(function(k){return'<option value="'+k+'"'+(k===q?' selected':'')+'>'+BIZ[k].n+'</option>'}).join('');
+function find(){return DB.load().cards.filter(function(c){return c.id===me})[0]}
+var shown=-1;
+function draw(first){var c=find();if(!c){$('jn').style.display='';$('cd').innerHTML='';$('ac').style.display='none';return}
+$('jn').style.display='none';$('ac').style.display='';$('sb').textContent='كارطك فـ Wallet.';$('cd').innerHTML=cardHTML(c);
+if(!first&&shown>=0&&c.stamps!==shown){var b=BIZ[c.biz];if(c.stamps>shown){toast(c.stamps>=GOAL?'كملتي الطوابع! دوز تاخد '+b.r:'تزاد ليك طابع ف'+b.n+' '+c.stamps+'/'+GOAL)}else{toast('استلمتي '+b.r);stars();$('mt').textContent=b.n;$('md').classList.add('show')}}shown=c.stamps}
+$('jb').onclick=function(){var n=$('nm').value.trim(),p=$('ph').value.replace(/\s/g,''),m=$('ms');
+if(n.length<2){m.className='msg er';m.textContent='دخل الاسم.';return}if(!/^(\+?212|0)[5-7]\d{8}$/.test(p)){m.className='msg er';m.textContent='نمرة التليفون ماشي صحيحة (مثال: 0612345678).';return}
+var d=DB.load(),c=d.cards.filter(function(x){return x.phone===p&&x.biz===$('b').value})[0];
+if(!c){c={id:newCode(d),name:n,phone:p,biz:$('b').value,stamps:0,rewards:0,at:Date.now()};d.cards.push(c);DB.save(d)}
+me=c.id;try{localStorage.setItem('tappy_me',me)}catch(e){}draw(true);toast('تزادت ليك الكارط فـ Wallet')};
+$('lo').onclick=function(){try{localStorage.removeItem('tappy_me')}catch(e){}me=null;shown=-1;draw(true)};
+$('nr').onclick=function(){var c=find();if(!c)return;var b=BIZ[c.biz],l=GOAL-c.stamps;toast(l<=0?'راك قريب! كارطك كاملة، دوز تاخد '+b.r:'راك قريب! باقي ليك '+(l===1?'طابع واحد':l+' طوابع')+' وتاخد '+b.r)};
+function stars(){rate=0;var e=$('sr');e.innerHTML='';for(var i=1;i<=5;i++)(function(i){var b=document.createElement('button');b.innerHTML=ic('star');b.setAttribute('aria-label',i+' نجوم');b.onclick=function(){rate=i;[].forEach.call(e.children,function(x,j){x.className=j<i?'on':''})};e.appendChild(b)})(i)}
+$('mp').onclick=function(){var d=DB.load(),c=find();d.reviews.push({biz:c?c.biz:'',stars:rate||5,text:$('tx').value,at:Date.now()});DB.save(d);$('md').classList.remove('show');toast('شكرا على التقييم')};
+window.addEventListener('storage',function(){draw(false)});draw(true)</script></body></html>

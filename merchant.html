@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>المتجر – Tappy</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap"><link rel="stylesheet" href="assets/style.css"></head><body><div class="w"><header id="hd"></header><h2>لوحة المتجر</h2><p class="sub">سجل الدخول، وزيد الطوابع للكليان.</p>
+<div id="lg" class="form"><label for="b">المتجر</label><select id="b"></select><label for="pn">الرمز السري (تجريبي: 1111 كافي، 2222 حلاق، 3333 صالون)</label><input id="pn" type="password" inputmode="numeric" dir="ltr"><button class="btn" id="lb">دخول</button><div class="msg er" id="m1" role="alert"></div></div>
+<div id="pn2" style="display:none"><div class="grid"><div class="box"><b id="bn"></b><div class="kpi" id="k1">0</div><span style="color:var(--mu)">كليان</span></div><div class="box"><div class="kpi" id="k2">0</div><span style="color:var(--mu)">مكافآت متسلمة</span></div></div>
+<section class="form" style="border:0"><h2>طابع جديد</h2><label for="cc">كود الكارط (مثال: T1234)</label><input id="cc" dir="ltr" autocapitalize="characters"><button class="btn" id="ab">زيد طابع</button><button class="btn au" id="rb" style="display:none">سلم المكافأة</button><div class="msg" id="m2" role="status"></div></section>
+<section><h2>الكليان</h2><div class="tw"><table><thead><tr><th>الكود</th><th>الاسم</th><th>الأختام</th></tr></thead><tbody id="tb"></tbody></table></div></section><button class="chip" id="lo">خرج</button></div>
+<footer>tappy · Apple Wallet · Google Wallet</footer></div><div class="toast" id="toast" role="status"></div><script src="assets/app.js"></script>
+<script>head('merchant.html');var $=function(i){return document.getElementById(i)},B=null;
+$('b').innerHTML=Object.keys(BIZ).map(function(k){return'<option value="'+k+'">'+BIZ[k].n+'</option>'}).join('');
+$('ab').innerHTML=ic('qr')+'زيد طابع';
+$('lb').onclick=function(){var k=$('b').value;if($('pn').value!==BIZ[k].pin){$('m1').textContent='الرمز السري غالط.';return}B=k;$('lg').style.display='none';$('pn2').style.display='';$('bn').textContent=BIZ[k].n;list()};
+$('lo').onclick=function(){B=null;$('lg').style.display='';$('pn2').style.display='none';$('pn').value=''};
+function list(){if(!B)return;var d=DB.load(),cs=d.cards.filter(function(c){return c.biz===B});$('k1').textContent=cs.length;$('k2').textContent=cs.reduce(function(a,c){return a+c.rewards},0);
+$('tb').innerHTML=cs.map(function(c){return'<tr><td dir="ltr">'+c.id+'</td><td>'+esc(c.name)+'</td><td>'+c.stamps+'/'+GOAL+'</td></tr>'}).join('')||'<tr><td colspan="3" style="color:var(--mu)">ما كاين حتى كليان بعد.</td></tr>'}
+function get(){var d=DB.load(),id=$('cc').value.trim().toUpperCase(),c=d.cards.filter(function(x){return x.id===id&&x.biz===B})[0];return{d:d,c:c}}
+$('ab').onclick=function(){var r=get(),m=$('m2');if(!r.c){m.className='msg er';m.textContent='هاد الكود ما كاينش فهاد المتجر.';return}
+if(r.c.stamps>=GOAL){m.className='msg er';m.textContent='الكارط كاملة، سلم المكافأة.';$('rb').style.display='';return}
+r.c.stamps++;r.d.log.push({id:r.c.id,biz:B,t:'stamp',at:Date.now()});DB.save(r.d);m.className='msg ok';m.textContent='تزاد طابع لـ '+r.c.name+' ('+r.c.stamps+'/'+GOAL+')';$('rb').style.display=r.c.stamps>=GOAL?'':'none';list()};
+$('rb').onclick=function(){var r=get();if(!r.c||r.c.stamps<GOAL)return;r.c.stamps=0;r.c.rewards++;r.d.log.push({id:r.c.id,biz:B,t:'reward',at:Date.now()});DB.save(r.d);$('rb').style.display='none';$('m2').className='msg ok';$('m2').textContent='تسلمات المكافأة: '+BIZ[B].r;list()};
+window.addEventListener('storage',list)</script></body></html>

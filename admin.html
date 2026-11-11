@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>المشرف – Tappy</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap"><link rel="stylesheet" href="assets/style.css"></head><body><div class="w"><header id="hd"></header><h2>لوحة المشرف</h2><p class="sub">نظرة على كل المتاجر والكليان والتقييمات.</p>
+<div id="lg" class="form"><label for="pn">الرمز السري (تجريبي: 0000)</label><input id="pn" type="password" inputmode="numeric" dir="ltr"><button class="btn" id="lb">دخول</button><div class="msg er" id="m1" role="alert"></div></div>
+<div id="dash" style="display:none"><div class="grid" id="kp"></div>
+<section><h2>المتاجر</h2><div class="tw"><table><thead><tr><th>المتجر</th><th>الكليان</th><th>الطوابع</th><th>المكافآت</th></tr></thead><tbody id="tb"></tbody></table></div></section>
+<section><h2>آخر التقييمات</h2><div id="rv"></div></section>
+<section><h2>الكليان</h2><div class="tw"><table><thead><tr><th>الكود</th><th>الاسم</th><th>التليفون</th><th>المتجر</th><th>الأختام</th></tr></thead><tbody id="cl"></tbody></table></div></section>
+<button class="btn au" id="rs">مسح كل البيانات التجريبية</button></div>
+<footer>tappy · Apple Wallet · Google Wallet</footer></div><div class="toast" id="toast" role="status"></div><script src="assets/app.js"></script>
+<script>head('admin.html');var $=function(i){return document.getElementById(i)};
+$('lb').onclick=function(){if($('pn').value!==ADMIN_PIN){$('m1').textContent='الرمز السري غالط.';return}$('lg').style.display='none';$('dash').style.display='';draw()};
+function draw(){var d=DB.load(),k=Object.keys(BIZ),sum=function(a,f){return a.reduce(function(s,c){return s+c[f]},0)};
+$('kp').innerHTML=[['الكليان',d.cards.length,'wallet'],['المكافآت',sum(d.cards,'rewards'),'gift'],['التقييمات',d.reviews.length,'star'],['الطوابع الحالية',sum(d.cards,'stamps'),'chart']].map(function(x){return'<div class="box">'+ic(x[2])+'<div class="kpi">'+x[1]+'</div>'+x[0]+'</div>'}).join('');
+$('tb').innerHTML=k.map(function(b){var cs=d.cards.filter(function(c){return c.biz===b});return'<tr><td>'+BIZ[b].n+'</td><td>'+cs.length+'</td><td>'+sum(cs,'stamps')+'</td><td>'+sum(cs,'rewards')+'</td></tr>'}).join('');
+$('rv').innerHTML=d.reviews.slice(-5).reverse().map(function(r){return'<div class="box" style="margin-bottom:8px"><b>'+(BIZ[r.biz]?BIZ[r.biz].n:'')+' · '+r.stars+'/5</b>'+esc(r.text||'')+'</div>'}).join('')||'<span style="color:var(--mu)">ما كاين حتى تقييم.</span>';
+$('cl').innerHTML=d.cards.map(function(c){return'<tr><td dir="ltr">'+c.id+'</td><td>'+esc(c.name)+'</td><td dir="ltr">'+esc(c.phone)+'</td><td>'+BIZ[c.biz].n+'</td><td>'+c.stamps+'/'+GOAL+'</td></tr>'}).join('')}
+$('rs').onclick=function(){if(confirm('تمسح كل البيانات؟')){DB.reset();draw()}};
+window.addEventListener('storage',function(){if($('dash').style.display!=='none')draw()})</script></body></html>
